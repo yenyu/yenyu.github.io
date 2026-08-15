@@ -1,0 +1,635 @@
+<style>
+:root {
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap-md: 12px;
+  --gap-lg: 16px;
+  --gap-xl: 24px;
+  --radius: 8px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+.app-container {
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+}
+
+.header-section {
+  padding: 1.5rem 0 2rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.header-title {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.header-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.navigation {
+  display: flex;
+  gap: var(--gap-md);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.nav-button {
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav-button:hover {
+  color: var(--text-primary);
+}
+
+.nav-button.active {
+  color: var(--text-primary);
+  border-bottom-color: var(--fill-accent);
+}
+
+.section-hidden { display: none; }
+.section-visible { display: block; }
+
+.consonants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--gap-md);
+  margin-bottom: var(--gap-lg);
+}
+
+.vowel-section {
+  margin-bottom: 2rem;
+}
+
+.section-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--gap-md);
+}
+
+.vowel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--gap-md);
+}
+
+.phoneme-tile {
+  background: var(--surface-2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.phoneme-tile:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-1);
+}
+
+.phoneme-symbol {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  font-family: Consolas, "Monaco", monospace;
+  line-height: 1;
+}
+
+.phoneme-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.play-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--surface-1);
+  border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 500;
+  transition: all 0.2s;
+  margin-bottom: 8px;
+}
+
+.play-control:hover {
+  background: var(--fill-ghost-hover);
+  border-color: var(--border-stronger);
+}
+
+.play-control.playing {
+  background: var(--fill-accent);
+  color: var(--on-accent);
+  border-color: var(--fill-accent);
+}
+
+.play-icon {
+  font-size: 12px;
+}
+
+.example-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.quiz-container {
+  background: var(--surface-1);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+.quiz-progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.progress-info {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.progress-bar {
+  flex: 1;
+  margin: 0 16px;
+  height: 4px;
+  background: var(--surface-2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--fill-accent);
+  transition: width 0.3s;
+}
+
+.score-badge {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--fill-accent);
+}
+
+.quiz-question-box {
+  text-align: center;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: var(--surface-2);
+  border-radius: var(--radius);
+}
+
+.quiz-question-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.quiz-phoneme-display {
+  font-size: 44px;
+  font-weight: 600;
+  color: var(--fill-accent);
+  font-family: Consolas, "Monaco", monospace;
+  margin-bottom: 8px;
+}
+
+.quiz-question-text {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+  margin-bottom: 24px;
+}
+
+.option-btn {
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: left;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.option-btn:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  background: var(--fill-ghost-hover);
+}
+
+.option-btn:disabled {
+  cursor: not-allowed;
+}
+
+.option-btn.selected {
+  background: var(--fill-accent);
+  border-color: var(--fill-accent);
+  color: var(--on-accent);
+}
+
+.option-btn.correct {
+  background: var(--bg-success);
+  border-color: var(--border-success);
+  color: var(--text-success);
+}
+
+.option-btn.incorrect {
+  background: var(--bg-danger);
+  border-color: var(--border-danger);
+  color: var(--text-danger);
+}
+
+.quiz-actions {
+  display: flex;
+  gap: var(--gap-md);
+  justify-content: center;
+}
+
+.action-btn {
+  padding: 10px 18px;
+  border: 0.5px solid var(--border-strong);
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: var(--fill-ghost-hover);
+}
+
+.action-btn.primary {
+  background: var(--fill-accent);
+  border-color: var(--fill-accent);
+  color: var(--on-accent);
+}
+
+.action-btn.primary:hover {
+  filter: brightness(0.95);
+}
+
+.completion-panel {
+  text-align: center;
+  padding: 32px 24px;
+}
+
+.completion-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.completion-title {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.completion-score {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--fill-accent);
+  margin-bottom: 8px;
+}
+
+.completion-rate {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.tip-box {
+  background: var(--bg-accent);
+  border: 0.5px solid var(--border-accent);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text-accent);
+}
+</style>
+
+<div class="app-container">
+  <div class="header-section">
+    <h1 class="header-title">KK 音標自習室</h1>
+    <p class="header-desc">系統化學習英文 KK 音標，掌握準確發音基礎。</p>
+  </div>
+
+  <div class="navigation">
+    <button class="nav-button active" onclick="switchView('consonants')">子 音</button>
+    <button class="nav-button" onclick="switchView('vowels')">母 音</button>
+    <button class="nav-button" onclick="switchView('quiz')">評 測</button>
+  </div>
+
+  <div id="consonants" class="section-visible">
+    <div class="tip-box">
+      <i class="ti ti-info-circle" style="font-size: 13px; vertical-align: -1px; margin-right: 6px;" aria-hidden="true"></i>
+      點擊播放按鈕聽取標準發音示範。
+    </div>
+    <div class="consonants-grid" id="consonantGrid"></div>
+  </div>
+
+  <div id="vowels" class="section-hidden">
+    <div class="tip-box">
+      <i class="ti ti-info-circle" style="font-size: 13px; vertical-align: -1px; margin-right: 6px;" aria-hidden="true"></i>
+      單元音和複合音標分別展示。點擊播放聆聽差異。
+    </div>
+    <div id="vowelContainer"></div>
+  </div>
+
+  <div id="quiz" class="section-hidden">
+    <div class="quiz-container">
+      <div class="quiz-progress">
+        <div class="progress-info"><span id="quizCurrent">1</span> / <span id="quizTotal">10</span></div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="score-badge"><span id="scoreDisplay">0</span> / <span id="scoreTotal">10</span></div>
+      </div>
+      <div id="quizContent"></div>
+      <div class="quiz-actions">
+        <button class="action-btn" onclick="previousQuiz()">
+          <i class="ti ti-arrow-left" style="font-size: 13px; vertical-align: -2px; margin-right: 4px;" aria-hidden="true"></i>
+          上一題
+        </button>
+        <button class="action-btn primary" onclick="nextQuiz()">
+          下一題
+          <i class="ti ti-arrow-right" style="font-size: 13px; vertical-align: -2px; margin-left: 4px;" aria-hidden="true"></i>
+        </button>
+        <button class="action-btn" onclick="resetQuiz()">
+          <i class="ti ti-refresh" style="font-size: 13px; vertical-align: -2px; margin-right: 4px;" aria-hidden="true"></i>
+          重新開始
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const CONSONANTS = [
+  { symbol: '/p/', label: '雙唇無聲爆破', word: 'pen' },
+  { symbol: '/b/', label: '雙唇有聲爆破', word: 'bed' },
+  { symbol: '/t/', label: '齒槽無聲爆破', word: 'ten' },
+  { symbol: '/d/', label: '齒槽有聲爆破', word: 'dog' },
+  { symbol: '/k/', label: '軟齶無聲爆破', word: 'key' },
+  { symbol: '/g/', label: '軟齶有聲爆破', word: 'go' },
+  { symbol: '/f/', label: '唇齒無聲擦音', word: 'fun' },
+  { symbol: '/v/', label: '唇齒有聲擦音', word: 'van' },
+  { symbol: '/θ/', label: '齒無聲擦音', word: 'think' },
+  { symbol: '/ð/', label: '齒有聲擦音', word: 'this' },
+  { symbol: '/s/', label: '齒槽無聲擦音', word: 'sun' },
+  { symbol: '/z/', label: '齒槽有聲擦音', word: 'zoo' },
+  { symbol: '/ʃ/', label: '後齒槽無聲擦', word: 'she' },
+  { symbol: '/ʒ/', label: '後齒槽有聲擦', word: 'vision' },
+  { symbol: '/tʃ/', label: '齒槽無聲塞擦', word: 'chin' },
+  { symbol: '/dʒ/', label: '後齒槽有聲塞擦', word: 'jump' },
+  { symbol: '/m/', label: '雙唇鼻音', word: 'milk' },
+  { symbol: '/n/', label: '齒槽鼻音', word: 'no' },
+  { symbol: '/ŋ/', label: '軟齶鼻音', word: 'ring' },
+  { symbol: '/l/', label: '齒槽邊音', word: 'like' },
+  { symbol: '/r/', label: '齒槽近音', word: 'run' },
+  { symbol: '/w/', label: '軟齶滑音', word: 'wet' },
+  { symbol: '/j/', label: '軟齶滑音', word: 'yes' },
+  { symbol: '/h/', label: '聲門擦音', word: 'hat' }
+];
+
+const VOWELS = [
+  { symbol: '/i/', label: '前高舌母音', word: 'eat' },
+  { symbol: '/ɪ/', label: '前次高舌母音', word: 'sit' },
+  { symbol: '/e/', label: '前中高舌母音', word: 'day' },
+  { symbol: '/ɛ/', label: '前中舌母音', word: 'bed' },
+  { symbol: '/æ/', label: '前低舌母音', word: 'cat' },
+  { symbol: '/a/', label: '後低舌母音', word: 'hot' },
+  { symbol: '/ɔ/', label: '後中舌母音', word: 'dog' },
+  { symbol: '/o/', label: '後中高舌母音', word: 'go' },
+  { symbol: '/ʊ/', label: '後次高舌母音', word: 'book' },
+  { symbol: '/u/', label: '後高舌母音', word: 'food' },
+  { symbol: '/ʌ/', label: '中央母音', word: 'cup' },
+  { symbol: '/ə/', label: '央舌母音', word: 'about' },
+  { symbol: '/ɚ/', label: '央舌卷舌音', word: 'her' },
+  { symbol: '/aɪ/', label: '複合母音', word: 'my' },
+  { symbol: '/eɪ/', label: '複合母音', word: 'day' },
+  { symbol: '/ɔɪ/', label: '複合母音', word: 'boy' },
+  { symbol: '/aʊ/', label: '複合母音', word: 'how' },
+  { symbol: '/oʊ/', label: '複合母音', word: 'go' }
+];
+
+let quizData = [];
+let currentIndex = 0;
+let score = 0;
+let answered = false;
+
+function renderConsonants() {
+  const grid = document.getElementById('consonantGrid');
+  grid.innerHTML = CONSONANTS.map((p, i) => `
+    <div class="phoneme-tile">
+      <div class="phoneme-symbol">${p.symbol}</div>
+      <div class="phoneme-label">${p.label}</div>
+      <button class="play-control" onclick="playSound('${p.word}', this)">
+        <span class="play-icon">▶</span> 播放
+      </button>
+      <div class="example-text">${p.word}</div>
+    </div>
+  `).join('');
+}
+
+function renderVowels() {
+  const container = document.getElementById('vowelContainer');
+  const pure = VOWELS.slice(0, 13);
+  const complex = VOWELS.slice(13);
+  
+  container.innerHTML = `
+    <div class="vowel-section">
+      <div class="section-label">單元音</div>
+      <div class="vowel-grid">
+        ${pure.map(p => `
+          <div class="phoneme-tile">
+            <div class="phoneme-symbol">${p.symbol}</div>
+            <div class="phoneme-label">${p.label}</div>
+            <button class="play-control" onclick="playSound('${p.word}', this)">
+              <span class="play-icon">▶</span> 播放
+            </button>
+            <div class="example-text">${p.word}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="vowel-section">
+      <div class="section-label">複合母音</div>
+      <div class="vowel-grid">
+        ${complex.map(p => `
+          <div class="phoneme-tile">
+            <div class="phoneme-symbol">${p.symbol}</div>
+            <div class="phoneme-label">${p.label}</div>
+            <button class="play-control" onclick="playSound('${p.word}', this)">
+              <span class="play-icon">▶</span> 播放
+            </button>
+            <div class="example-text">${p.word}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function playSound(word, btn) {
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(word);
+  u.lang = 'en-US';
+  u.rate = 0.7;
+  btn.classList.add('playing');
+  u.onend = () => btn.classList.remove('playing');
+  u.onerror = () => btn.classList.remove('playing');
+  speechSynthesis.speak(u);
+}
+
+function switchView(view) {
+  document.querySelectorAll('[id="consonants"], [id="vowels"], [id="quiz"]').forEach(el => {
+    el.className = 'section-hidden';
+  });
+  document.getElementById(view).className = 'section-visible';
+  document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  if (view === 'quiz' && quizData.length === 0) initQuiz();
+}
+
+function initQuiz() {
+  quizData = [...CONSONANTS, ...VOWELS].sort(() => Math.random() - 0.5).slice(0, 10);
+  currentIndex = 0;
+  score = 0;
+  answered = false;
+  showQuiz();
+}
+
+function showQuiz() {
+  if (currentIndex >= quizData.length) {
+    const rate = Math.round(score / quizData.length * 100);
+    document.getElementById('quizContent').innerHTML = `
+      <div class="completion-panel">
+        <div class="completion-icon">✓</div>
+        <h2 class="completion-title">評測完成</h2>
+        <div class="completion-score">${score}/${quizData.length}</div>
+        <div class="completion-rate">正確率 ${rate}%</div>
+      </div>
+    `;
+    return;
+  }
+  
+  const item = quizData[currentIndex];
+  const opts = genOptions(item);
+  
+  document.getElementById('quizCurrent').textContent = currentIndex + 1;
+  document.getElementById('quizTotal').textContent = quizData.length;
+  document.getElementById('scoreDisplay').textContent = score;
+  document.getElementById('scoreTotal').textContent = quizData.length;
+  const pct = Math.round((currentIndex / quizData.length) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  
+  document.getElementById('quizContent').innerHTML = `
+    <div class="quiz-question-box">
+      <div class="quiz-question-label">識別音標</div>
+      <div class="quiz-phoneme-display">${item.symbol}</div>
+      <div class="quiz-question-text">這個音標的例字是什麼？</div>
+    </div>
+    <div class="quiz-options">
+      ${opts.map((o, i) => `
+        <button class="option-btn" onclick="selectAns(${i}, '${o}')" ${answered ? 'disabled' : ''}>${o}</button>
+      `).join('')}
+    </div>
+  `;
+  answered = false;
+}
+
+function genOptions(item) {
+  const correct = item.word;
+  const all = [...CONSONANTS, ...VOWELS];
+  const wrong = all.filter(p => p.word !== correct).sort(() => Math.random() - 0.5).slice(0, 3).map(p => p.word);
+  return [correct, ...wrong].sort(() => Math.random() - 0.5);
+}
+
+function selectAns(idx, ans) {
+  if (answered) return;
+  answered = true;
+  
+  const item = quizData[currentIndex];
+  const isCorrect = ans === item.word;
+  if (isCorrect) score++;
+  
+  const buttons = document.querySelectorAll('.option-btn');
+  buttons.forEach((btn, i) => {
+    if (btn.textContent === item.word) {
+      btn.classList.add('correct');
+    } else if (i === idx && !isCorrect) {
+      btn.classList.add('incorrect');
+    }
+    btn.disabled = true;
+  });
+}
+
+function nextQuiz() {
+  if (currentIndex < quizData.length - 1) {
+    currentIndex++;
+    showQuiz();
+  }
+}
+
+function previousQuiz() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    showQuiz();
+  }
+}
+
+function resetQuiz() {
+  quizData = [];
+  currentIndex = 0;
+  score = 0;
+  initQuiz();
+}
+
+renderConsonants();
+renderVowels();
+</script>

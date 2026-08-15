@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KK音標練習</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; }
+.container { max-width: 900px; margin: 0 auto; }
+.header { text-align: center; margin-bottom: 30px; }
+.header h1 { font-size: 28px; color: var(--text-primary); margin-bottom: 8px; }
+.header p { color: var(--text-secondary); font-size: 14px; }
+.tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+.tab-btn { padding: 12px 20px; background: none; border: none; cursor: pointer; color: var(--text-secondary); font-size: 14px; border-bottom: 2px solid transparent; transition: all 0.2s; }
+.tab-btn.active { color: var(--text-primary); border-bottom-color: var(--fill-accent); }
+.tab-btn:hover { color: var(--text-primary); }
+.content { display: none; }
+.content.active { display: block; }
+.phoneme-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.phoneme-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.phoneme-card:hover { border-color: var(--border-strong); background: var(--surface-1); }
+.phoneme-card.selected { border-color: var(--fill-accent); background: var(--bg-accent); }
+.phoneme-symbol { font-size: 28px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; font-family: 'Arial Unicode MS', sans-serif; }
+.phoneme-card.selected .phoneme-symbol { color: var(--text-accent); }
+.phoneme-desc { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+.phoneme-card.selected .phoneme-desc { color: var(--text-accent); }
+.play-btn { background: var(--fill-secondary); border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 14px; cursor: pointer; font-size: 13px; color: var(--text-primary); transition: all 0.2s; font-weight: 500; }
+.play-btn:hover { background: var(--fill-secondary-hover); }
+.play-btn.playing { background: var(--fill-accent); color: var(--on-accent); border: none; animation: pulse 0.6s infinite; }
+.phoneme-card.selected .play-btn { background: var(--fill-accent); color: var(--on-accent); border: none; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+.example-text { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+.quiz-section { background: var(--surface-1); border-radius: var(--radius); padding: 20px; margin-top: 20px; }
+.quiz-question { margin-bottom: 20px; }
+.quiz-question p { color: var(--text-secondary); font-size: 12px; margin-bottom: 8px; }
+.quiz-options { display: flex; flex-direction: column; gap: 8px; }
+.option-btn { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; text-align: left; cursor: pointer; transition: all 0.2s; font-size: 14px; color: var(--text-primary); font-weight: 500; }
+.option-btn:hover:not(:disabled) { border-color: var(--border-strong); background: var(--fill-ghost-hover); }
+.option-btn.selected { background: var(--fill-accent); color: var(--on-accent); border-color: var(--fill-accent); }
+.option-btn.correct { background: var(--bg-success); color: var(--text-success); border-color: var(--border-success); }
+.option-btn.incorrect { background: var(--bg-danger); color: var(--text-danger); border-color: var(--border-danger); }
+.option-btn:disabled { cursor: not-allowed; }
+.score-display { text-align: center; margin: 20px 0; }
+.score-num { font-size: 32px; font-weight: 600; color: var(--fill-accent); }
+.score-text { font-size: 14px; color: var(--text-secondary); }
+.btn-group { display: flex; gap: 8px; margin-top: 16px; justify-content: center; }
+button { padding: 8px 16px; border-radius: var(--radius); border: 1px solid var(--border-strong); background: var(--surface-2); cursor: pointer; font-size: 14px; transition: all 0.2s; color: var(--text-primary); font-weight: 500; }
+button:hover:not(:disabled) { background: var(--fill-ghost-hover); }
+button.primary { background: var(--fill-accent); color: var(--on-accent); border: none; }
+button.primary:hover:not(:disabled) { background: var(--fill-accent); filter: brightness(0.9); }
+.vowels { display: flex; flex-direction: column; gap: 20px; }
+.vowel-group { display: flex; flex-direction: column; gap: 12px; }
+.vowel-group-title { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+.vowel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.note { font-size: 12px; color: var(--text-secondary); padding: 12px; background: var(--surface-1); border-radius: var(--radius); margin-top: 12px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>KK音標練習站</h1>
+    <p>學習英文KK音標發音 - 完全本地端練習</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('consonants')">子音</button>
+    <button class="tab-btn" onclick="switchTab('vowels')">母音</button>
+    <button class="tab-btn" onclick="switchTab('quiz')">測驗</button>
+  </div>
+
+  <!-- 子音區域 -->
+  <div id="consonants" class="content active">
+    <div class="note">💡 提示：點擊「播放」按鈕聽發音示範</div>
+    <div class="phoneme-grid" id="consonantGrid"></div>
+  </div>
+
+  <!-- 母音區域 -->
+  <div id="vowels" class="content">
+    <div class="note">💡 提示：點擊「播放」按鈕聽發音示範</div>
+    <div class="vowels" id="vowelContainer"></div>
+  </div>
+
+  <!-- 測驗區域 -->
+  <div id="quiz" class="content">
+    <div class="quiz-section">
+      <div class="score-display">
+        <div class="score-text">你的分數</div>
+        <div class="score-num" id="scoreNum">0/0</div>
+      </div>
+      <div class="quiz-question" id="quizContainer"></div>
+      <div class="btn-group">
+        <button class="primary" onclick="nextQuiz()">下一題</button>
+        <button onclick="resetQuiz()">重新開始</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const consonants = [
+  { symbol: '/p/', desc: '雙唇無聲爆破', examples: ['pen', 'pen', 'apple'] },
+  { symbol: '/b/', desc: '雙唇有聲爆破', examples: ['bed', 'bed', 'club'] },
+  { symbol: '/t/', desc: '齒槽無聲爆破', examples: ['ten', 'ten', 'cat'] },
+  { symbol: '/d/', desc: '齒槽有聲爆破', examples: ['dog', 'dog', 'bad'] },
+  { symbol: '/k/', desc: '軟齶無聲爆破', examples: ['key', 'key', 'clock'] },
+  { symbol: '/g/', desc: '軟齶有聲爆破', examples: ['go', 'go', 'bag'] },
+  { symbol: '/f/', desc: '唇齒無聲擦音', examples: ['fun', 'fun', 'safe'] },
+  { symbol: '/v/', desc: '唇齒有聲擦音', examples: ['van', 'van', 'love'] },
+  { symbol: '/θ/', desc: '齒無聲擦音', examples: ['think', 'think', 'math'] },
+  { symbol: '/ð/', desc: '齒有聲擦音', examples: ['this', 'this', 'mother'] },
+  { symbol: '/s/', desc: '齒槽無聲擦音', examples: ['sun', 'sun', 'class'] },
+  { symbol: '/z/', desc: '齒槽有聲擦音', examples: ['zoo', 'zoo', 'is'] },
+  { symbol: '/ʃ/', desc: '後齒槽無聲擦', examples: ['she', 'she', 'cash'] },
+  { symbol: '/ʒ/', desc: '後齒槽有聲擦', examples: ['vision', 'vision', 'measure'] },
+  { symbol: '/tʃ/', desc: '齒槽無聲塞擦', examples: ['chin', 'chin', 'teach'] },
+  { symbol: '/dʒ/', desc: '齒槽有聲塞擦', examples: ['jump', 'jump', 'bridge'] },
+  { symbol: '/m/', desc: '雙唇鼻音', examples: ['milk', 'milk', 'home'] },
+  { symbol: '/n/', desc: '齒槽鼻音', examples: ['no', 'no', 'sun'] },
+  { symbol: '/ŋ/', desc: '軟齶鼻音', examples: ['ring', 'ring', 'singing'] },
+  { symbol: '/l/', desc: '齒槽邊音', examples: ['like', 'like', 'ball'] },
+  { symbol: '/r/', desc: '齒槽近音', examples: ['run', 'run', 'car'] },
+  { symbol: '/w/', desc: '軟齶滑音', examples: ['wet', 'wet', 'away'] },
+  { symbol: '/j/', desc: '軟齶滑音', examples: ['yes', 'yes', 'you'] },
+  { symbol: '/h/', desc: '聲門擦音', examples: ['hat', 'hat', 'house'] }
+];
+
+const vowels = [
+  { symbol: '/i/', desc: '前高舌母音', examples: ['eat', 'eat', 'see'] },
+  { symbol: '/ɪ/', desc: '前次高舌母音', examples: ['sit', 'sit', 'list'] },
+  { symbol: '/e/', desc: '前中高舌母音', examples: ['day', 'day', 'say'] },
+  { symbol: '/ɛ/', desc: '前中舌母音', examples: ['bed', 'bed', 'say'] },
+  { symbol: '/æ/', desc: '前低舌母音', examples: ['cat', 'cat', 'man'] },
+  { symbol: '/a/', desc: '後低舌母音', examples: ['hot', 'hot', 'lot'] },
+  { symbol: '/ɔ/', desc: '後中舌母音', examples: ['dog', 'dog', 'coffee'] },
+  { symbol: '/o/', desc: '後中高舌母音', examples: ['go', 'go', 'show'] },
+  { symbol: '/ʊ/', desc: '後次高舌母音', examples: ['book', 'book', 'put'] },
+  { symbol: '/u/', desc: '後高舌母音', examples: ['food', 'food', 'too'] },
+  { symbol: '/ʌ/', desc: '中央母音', examples: ['cup', 'cup', 'up'] },
+  { symbol: '/ə/', desc: '央舌母音', examples: ['about', 'about', 'teacher'] },
+  { symbol: '/ɚ/', desc: '央舌卷舌音', examples: ['her', 'her', 'bird'] },
+  { symbol: '/aɪ/', desc: '複合母音', examples: ['my', 'my', 'try'] },
+  { symbol: '/eɪ/', desc: '複合母音', examples: ['day', 'day', 'way'] },
+  { symbol: '/ɔɪ/', desc: '複合母音', examples: ['boy', 'boy', 'toy'] },
+  { symbol: '/aʊ/', desc: '複合母音', examples: ['how', 'how', 'out'] },
+  { symbol: '/oʊ/', desc: '複合母音', examples: ['go', 'go', 'show'] }
+];
+
+let quizData = [];
+let currentQuizIndex = 0;
+let quizScore = 0;
+let currentlyPlaying = null;
+
+function switchTab(tab) {
+  document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+  document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+  
+  if (tab === 'quiz' && quizData.length === 0) {
+    initQuiz();
+  }
+}
+
+function playSound(symbol, index) {
+  if (currentlyPlaying === `${symbol}-${index}`) {
+    speechSynthesis.cancel();
+    currentlyPlaying = null;
+    return;
+  }
+  
+  speechSynthesis.cancel();
+  
+  const allPhonemes = [...consonants, ...vowels];
+  const phoneme = allPhonemes.find(p => p.symbol === symbol);
+  
+  if (!phoneme) return;
+  
+  const word = phoneme.examples[0];
+  
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = 'en-US';
+  utterance.rate = 0.7;
+  utterance.pitch = 1.0;
+  utterance.volume = 1.0;
+  
+  currentlyPlaying = `${symbol}-${index}`;
+  
+  utterance.onend = () => {
+    currentlyPlaying = null;
+    updatePlayButtonState();
+  };
+  
+  utterance.onerror = () => {
+    currentlyPlaying = null;
+    updatePlayButtonState();
+  };
+  
+  updatePlayButtonState();
+  speechSynthesis.speak(utterance);
+}
+
+function updatePlayButtonState() {
+  document.querySelectorAll('.play-btn').forEach(btn => {
+    btn.classList.remove('playing');
+  });
+  if (currentlyPlaying) {
+    const buttons = document.querySelectorAll(`[data-phoneme="${currentlyPlaying}"]`);
+    buttons.forEach(btn => btn.classList.add('playing'));
+  }
+}
+
+function renderConsonants() {
+  const grid = document.getElementById('consonantGrid');
+  grid.innerHTML = consonants.map((c, i) => `
+    <div class="phoneme-card">
+      <div class="phoneme-symbol">${c.symbol}</div>
+      <div class="phoneme-desc">${c.desc}</div>
+      <button class="play-btn" data-phoneme="${c.symbol}-${i}" onclick="playSound('${c.symbol}', ${i})">▶ 播放</button>
+      <div class="example-text">${c.examples.join(', ')}</div>
+    </div>
+  `).join('');
+}
+
+function renderVowels() {
+  const container = document.getElementById('vowelContainer');
+  const pureVowels = vowels.slice(0, 13);
+  const complexVowels = vowels.slice(13);
+  
+  container.innerHTML = `
+    <div class="vowel-group">
+      <div class="vowel-group-title">純母音</div>
+      <div class="vowel-grid">
+        ${pureVowels.map((v, i) => `
+          <div class="phoneme-card">
+            <div class="phoneme-symbol">${v.symbol}</div>
+            <div class="phoneme-desc">${v.desc}</div>
+            <button class="play-btn" data-phoneme="${v.symbol}-${i}" onclick="playSound('${v.symbol}', ${i})">▶ 播放</button>
+            <div class="example-text">${v.examples.join(', ')}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="vowel-group">
+      <div class="vowel-group-title">複合母音</div>
+      <div class="vowel-grid">
+        ${complexVowels.map((v, i) => `
+          <div class="phoneme-card">
+            <div class="phoneme-symbol">${v.symbol}</div>
+            <div class="phoneme-desc">${v.desc}</div>
+            <button class="play-btn" data-phoneme="${v.symbol}-${i + 13}" onclick="playSound('${v.symbol}', ${i + 13})">▶ 播放</button>
+            <div class="example-text">${v.examples.join(', ')}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function initQuiz() {
+  quizData = [...consonants, ...vowels].sort(() => Math.random() - 0.5).slice(0, 10);
+  currentQuizIndex = 0;
+  quizScore = 0;
+  showQuiz();
+}
+
+function showQuiz() {
+  if (currentQuizIndex >= quizData.length) {
+    document.getElementById('quizContainer').innerHTML = `
+      <div style="text-align: center; padding: 40px 20px;">
+        <div style="font-size: 32px; font-weight: 600; color: var(--fill-accent); margin-bottom: 12px;">完成!</div>
+        <div style="font-size: 18px; color: var(--text-primary); margin-bottom: 20px;">你得到了 ${quizScore}/${quizData.length} 分</div>
+        <div style="font-size: 14px; color: var(--text-secondary);">正確率: ${Math.round(quizScore/quizData.length*100)}%</div>
+      </div>
+    `;
+    return;
+  }
+  
+  const quiz = quizData[currentQuizIndex];
+  const options = generateOptions(quiz);
+  
+  document.getElementById('scoreNum').textContent = `${quizScore}/${quizData.length}`;
+  document.getElementById('quizContainer').innerHTML = `
+    <div>
+      <p>第 ${currentQuizIndex + 1}/${quizData.length} 題</p>
+      <div style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; padding: 20px; background: var(--surface-2); border-radius: var(--radius); text-align: center;">
+        這個音標 <span style="font-size: 24px; font-weight: 700; color: var(--fill-accent);">${quiz.symbol}</span> 念什麼?
+      </div>
+      <div class="quiz-options" id="optionsContainer">
+        ${options.map((opt, i) => `
+          <button class="option-btn" onclick="selectAnswer(${i}, '${opt}')">${opt}</button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function generateOptions(quiz) {
+  const correct = quiz.examples[0];
+  const others = [...consonants, ...vowels]
+    .filter(p => p.examples[0] !== correct)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3)
+    .map(p => p.examples[0]);
+  return [correct, ...others].sort(() => Math.random() - 0.5);
+}
+
+function selectAnswer(index, answer) {
+  const quiz = quizData[currentQuizIndex];
+  const isCorrect = answer === quiz.examples[0];
+  if (isCorrect) quizScore++;
+  
+  const options = document.querySelectorAll('.option-btn');
+  options.forEach((btn, i) => {
+    const btnAnswer = btn.textContent;
+    if (btnAnswer === quiz.examples[0]) {
+      btn.classList.add('correct');
+    } else if (i === index && !isCorrect) {
+      btn.classList.add('incorrect');
+    }
+    btn.disabled = true;
+  });
+}
+
+function nextQuiz() {
+  currentQuizIndex++;
+  showQuiz();
+}
+
+function resetQuiz() {
+  quizData = [];
+  currentQuizIndex = 0;
+  quizScore = 0;
+  initQuiz();
+}
+
+renderConsonants();
+renderVowels();
+</script>
+</body>
+</html>
